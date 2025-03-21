@@ -1,0 +1,57 @@
+services:
+  broker:
+    image: apache/kafka:3.9.0
+    hostname: broker
+    container_name: broker
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker:29092,EXTERNAL://localhost:9092
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: INTERNAL://broker:29092,CONTROLLER://broker:29093,EXTERNAL://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  sumo:
+    image: ghcr.io/eclipse-sumo/sumo:v1_22_0
+    hostname: sumo
+    container_name: sumo
+    command: sumo -c /data/map.sumocfg -v --remote-port 8813
+    ports:
+      - 8813:8813
+    volumes:
+      - ./sumo:/data
+  kafka-sumo:
+    image: kafka-sumo:1.0.0
+    hostname: kafka-sumo
+    container_name: kafka-sumo
+    environment:
+      KAFKA_BROKERS: "broker:29092"
+      TRACI_HOST: "sumo"
+      TRACI_PORT: 8813
+    depends_on:
+      broker:
+        condition: service_healthy
+      sumo:
+        condition: service_started
+  sumo-metrics:
+    image: sumo-metrics:1.0.0
+    hostname: sumo-metrics
+    container_name: sumo-metrics
+    environment:
+      SERVER_PORT: 5000
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "broker:29092"
+    ports:
+      - 5000:5000
+    depends_on:
+      broker:
+        condition: service_healthy
