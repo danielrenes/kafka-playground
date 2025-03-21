@@ -1,0 +1,56 @@
+[project]
+name = "kafka-sumo"
+version = "1.0.0"
+requires-python = ">=3.10"
+dependencies = [
+    "confluent-kafka==2.8.2",
+    "protobuf==5.29.3",
+    "traci==1.22.0",
+]
+
+[project.optional-dependencies]
+lint = ["pylint==3.3.5"]
+format = ["black==25.1.0", "isort==6.0.1"]
+typecheck = ["mypy==1.15.0"]
+test = ["pytest==8.3.5"]
+stubs = ["types-protobuf==5.29.1.20250315"]
+dev = ["kafka-sumo[lint,format,typecheck,test,stubs]"]
+
+[project.scripts]
+kafka-sumo = "kafka_sumo.app:main"
+
+[build-system]
+requires = ["setuptools==76.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pylint]
+max-line-length = 100
+min-similarity-lines = 10
+ignore-paths = [".venv", "kafka_sumo/generated"]
+disable = [
+    "missing-docstring",
+    "too-few-public-methods",
+]
+
+[tool.black]
+target-version = ["py310", "py311", "py312", "py313"]
+line-length = 100
+extend-exclude = "kafka_sumo/generated"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+include_trailing_comma = true
+skip = [".venv", "kafka_sumo/generated"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["kafka_sumo"]
+show_error_codes = true
+pretty = true
+strict = true
+disable_error_code = ["import-untyped"]
+
+[[tool.mypy.overrides]]
+module = ["kafka_sumo.generated.*"]
+ignore_errors = true

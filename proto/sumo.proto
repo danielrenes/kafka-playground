@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package sumo;
+
+option java_package = "com.github.danielrenes.sumo.metrics.generated";
+
+message Coordinate {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+enum SpeedUnit {
+  METERS_PER_SECOND = 0;
+  KILOMETERS_PER_HOUR = 1;
+  MILES_PER_HOUR = 2;
+}
+
+message Speed {
+  double amount = 1;
+  SpeedUnit unit = 2;
+}
+
+enum AccelerationUnit {
+  METERS_PER_SECOND_SQUARED = 0;
+  KILOMETERS_PER_HOUR_SQUARED = 1;
+  MILES_PER_HOUR_SQUARED = 2;
+}
+
+message Acceleration {
+  double amount = 1;
+  AccelerationUnit unit = 2;
+}
+
+enum TimeUnit {
+  MILLISECOND = 0;
+  SECOND = 1;
+  MINUTE = 2;
+  HOUR = 3;
+}
+
+message Time {
+  double amount = 1;
+  TimeUnit unit = 2;
+}
+
+message Relation {
+  string roadId = 1;
+  string laneId = 2;
+}
+
+message Vehicle {
+  Coordinate position = 1;
+  Speed speed = 2;
+  Acceleration acceleration = 3;
+  Relation relation = 4;
+}
+
+enum SignalState {
+  UNKNOWN = 0;
+  OFF = 1;
+  RED = 2;
+  YELLOW = 3;
+  GREEN = 4;
+}
+
+message SignalPhase {
+  SignalState state = 1;
+  Time remaining = 2;
+}
+
+message Connection {
+  string ingressLaneId = 1;
+  string egressLaneId = 2;
+}
+
+message SignalGroup {
+  SignalPhase phase = 1;
+  repeated Connection connection = 2;
+}
+
+message TrafficLight { repeated SignalGroup signalGroups = 1; }
