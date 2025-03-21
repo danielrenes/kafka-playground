@@ -1,0 +1,6 @@
+<routes>
+   <vType id="car" type="passenger" length="5" accel="3.5" decel="2.2" sigma="1.0"/>
+   <flow id="flow_0" type="car" beg="0" end="0" number="15" from="-22953288#3" to="134510097#2"/>
+   <flow id="flow_1" type="car" beg="0" end="0" number="35" from="147061389#0" to="-27951367#1" via="-436539304#0 -1267934043#1 123528922#4"/>
+   <flow id="flow_2" type="car" beg="0" end="0" number="25" from="-480990824#3" to="-480990823#0" via="-480990825#1 -23015459#1"/>
+</routes>
